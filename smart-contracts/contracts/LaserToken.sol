@@ -3,8 +3,8 @@ pragma solidity 0.8.19;
 import "./ERC20interface.sol";
 contract LToken is ERC20interface{
     
-    string name = "LaserToken";
-    string symbol = "LT";
+    string public name;
+    string public symbol;
     uint8 public decimals;
     address public owner;
     uint public totalSupply;
@@ -12,7 +12,9 @@ contract LToken is ERC20interface{
     mapping (address => uint256) private balances;
     mapping (address => mapping(address => uint256)) public allowed;
 
-    constructor(uint256 _initialValue, uint8 _decimalUnits){
+    constructor(string memory _name,string memory _symbol, uint256 _initialValue, uint8 _decimalUnits){
+        name = _name;
+        symbol = _symbol;
         decimals = _decimalUnits;
         totalSupply = _initialValue*(10**uint256(decimals));
         balances[owner]= totalSupply;
