@@ -56,7 +56,6 @@ contract DefiPlatform is RequestFactory{
         validRequests[requestContract] = true;
 
         emit LoanAsked();
-        return true;
     }
 
     function lend(address payable _requestContractAddress) external returns(bool result) {
@@ -98,14 +97,14 @@ contract DefiPlatform is RequestFactory{
     function removeRequest(address _requestContractAddress, address _asker) private {
         
         userRequestCount[_asker] --;
-        uint256 idx= requestIndex[_requestConractAddress];
-        if(lendinRequests[idx] == _requestConractAddress){
+        uint256 idx= requestIndex[_requestContractAddress];
+        if(lendingRequests[idx] == _requestContractAddress){
             requestIndex[lendingRequests[lendingRequests.length-1]] = idx;
-            lendinRequests[idx] = lendingRequests[lendingRequests.length-1];
+            lendingRequests[idx] = lendingRequests[lendingRequests.length-1];
             lendingRequests.pop();
         }
 
-        validRequest[_requestContractAddress]= false;
+        validRequests[_requestContractAddress]= false;
 
     } 
    
