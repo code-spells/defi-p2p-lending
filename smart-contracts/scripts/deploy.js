@@ -1,32 +1,34 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
-const hre = require("hardhat");
-
+//import {ethers, upgrades} from "hardhat";
+//const hre = require("hardhat");
+require("@nomicfoundation/hardhat-ethers");
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  const tokenSupply = 100000;
+  const decimal = 0;
+  const tokenName  = "LaserToken";
+  const symbol = "LT";
 
-  const lockedAmount = hre.ethers.parseEther("0.001");
+  const LaserToken = await ethers.getContractFactory("LToken");
+  const lasertoken =  await LaserToken.deploy(tokenName,symbol,tokenSupply,decimal);
 
-  const lock = await hre.ethers.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
+  await lasertoken.deployed();
+  console.log("laser token deployment successful at : "+ lasertoken.address);
 
-  await lock.waitForDeployment();
+  const max_flagging = 7;
+  const Governance = await ethers.getContractFactory("Governance");
+  const governance = await upgrades.deployProxy(Governance,[max_flagging]);
 
-  console.log(
-    `Lock with ${ethers.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
-  );
+  //await governance.deployed();
+  console.log("upgradeable governance contract deployment successful at : "+ governance.address );
+
+  const DefiPlatform = await ethers.getContractFactory("DefiPlatform");
+	const defiplatform = await DefiPlatform.deploy(governance.address);
+	
+	//await defiplatform.deployed();
+	
+	console.log("DefiPlatform deployed to :", defiplatform.address);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
+
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
